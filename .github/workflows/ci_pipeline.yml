@@ -1,0 +1,42 @@
+# .github/workflows/ci_pipeline.yml
+
+name: MLOps Pipeline CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go and Dagger
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          
+      - name: Run Dagger MLOps Pipeline
+        id: dagger-pipeline
+        run: |
+          go run main.go --source . export --path .build
+          
+      - name: Upload Model Artifact 'model'
+        uses: actions/upload-artifact@v4
+        with:
+          name: model
+          path: |
+            ./.build/mlruns/  # Contains the actual model files and metadata
+            ./.build/artifacts/columns_list.json
+            
+      - name: Validate Model Inference
+        uses: lasselundstenjensen/itu-sdse-project-model-validator@main
+
+    
