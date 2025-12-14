@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"dagger.io/dagger" 
 )
 
 type Dagger struct{}

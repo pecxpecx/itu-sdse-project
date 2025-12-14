@@ -1,0 +1,5 @@
+module itu-sdse-project
+
+go 1.25.1
+
+require github.com/dagger/dagger v0.12.0 // indirect
