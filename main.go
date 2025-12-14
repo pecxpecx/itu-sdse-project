@@ -45,12 +45,12 @@ func RunPipeline(ctx context.Context, client *dagger.Client) error {
         WithWorkdir("/repo") 
 
     // Install Python dependencies
-    fmt.Println("--- 🛠️ Installing Dependencies ---")
+    fmt.Println("--- Installing Dependencies ---")
     base = base.WithExec([]string{"pip", "install", "-r", "requirements.txt"})
 
     // --- 2. Data Preparation Stage (src/data_prep.py) ---
     // The script expects raw data at /repo/data/raw_data.csv and outputs to /repo/artifacts/
-    fmt.Println("--- 🚀 Stage 1: Running Data Preparation ---")
+    fmt.Println("--- Stage 1: Running Data Preparation ---")
     dataPrep := base.WithExec([]string{"python", "src/data_prep.py"})
     if _, err := dataPrep.Stdout(ctx); err != nil {
         return err
@@ -58,7 +58,7 @@ func RunPipeline(ctx context.Context, client *dagger.Client) error {
     
     // --- 3. Model Training Stage (src/train.py) ---
     // The script reads from /repo/artifacts/ and outputs to /repo/mlruns/
-    fmt.Println("--- 🚀 Stage 2: Running Model Training ---")
+    fmt.Println("--- Stage 2: Running Model Training ---")
     train := dataPrep.WithExec([]string{"python", "src/train.py"})
     if _, err := train.Stdout(ctx); err != nil {
         return err
@@ -66,7 +66,7 @@ func RunPipeline(ctx context.Context, client *dagger.Client) error {
 
     // --- 4. Model Deployment Stage (src/deploy.py) ---
     // The script interacts with the MLflow registry in /repo/mlruns/
-    fmt.Println("--- 🚀 Stage 3: Running Model Deployment ---")
+    fmt.Println("--- Stage 3: Running Model Deployment ---")
     deployment := train.WithExec([]string{"python", "src/deploy.py"})
     if _, err := deployment.Stdout(ctx); err != nil {
         return err
