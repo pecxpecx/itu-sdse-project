@@ -8,6 +8,7 @@ import numpy as np
 import warnings
 from pprint import pprint
 import joblib
+import subprocess
 
 from sklearn.preprocessing import MinMaxScaler
 
@@ -145,10 +146,24 @@ def run_data_processing(raw_data_path: str, artifacts_dir: str):
 
 if __name__ == "__main__":
     
+    # --- DVC Data Pull ---
+    print("--- DVC: Updating and Pulling Data ---")
+    try:
+        subprocess.run(["dvc", "update", "data/raw_data.csv.dvc"], check=True, cwd=".")
+        # This fetches the data from the remote DVC storage.
+        subprocess.run(["dvc", "pull"], check=True, cwd=".")
+        print("--- DVC Pull Successful ---")
+    except subprocess.CalledProcessError as e:
+        print(f"--- DVC PULL FAILED! Ensure DVC is installed and configured correctly. Error: {e} ---")
+        # Raising the error stops the pipeline immediately if data retrieval fails.
+        raise
+    # ---------------------------------------------
+
+
     RAW_DATA_INPUT_PATH = os.path.join("/", "repo", "data", "raw_data.csv") 
     ARTIFACTS_OUTPUT_DIR = "artifacts"
     
-    # Check if raw data exists at the new path
+    # The file check now verifies the file was successfully pulled by DVC
     if not os.path.exists(RAW_DATA_INPUT_PATH):
         raise FileNotFoundError(
             f"Required raw data not found at: {RAW_DATA_INPUT_PATH}. "
