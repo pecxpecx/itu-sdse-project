@@ -36,6 +36,14 @@ jobs:
         with:
           name: model
           path: model.pkl
+
+      - name: Archive All MLOps Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-mlops-run-data 
+          path: |
+            ./mlruns/
+            ./artifacts/
             
   test:
     needs: build_and_deploy
