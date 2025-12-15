@@ -1,6 +1,6 @@
 # .github/workflows/ci_pipeline.yml
 
-name: MLOps Pipeline CI/CD
+name: MLOps Pipeline
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  train:
     runs-on: ubuntu-latest
     
     steps:
@@ -46,7 +46,7 @@ jobs:
             ./artifacts/
             
   test:
-    needs: build
+    needs: train
     runs-on: ubuntu-latest
 
     steps:
