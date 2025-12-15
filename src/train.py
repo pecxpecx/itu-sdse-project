@@ -148,7 +148,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
     with mlflow.start_run(experiment_id=experiment_id) as run:
         
         lr_model = LogisticRegression()
-        lr_model_path = os.path.join(artifacts_dir, "lead_model_lr.pkl")
+        validation_model_path = os.path.join(artifacts_dir, "model.pkl")
 
         # Hyperparameter search space
         lr_params = {
@@ -157,7 +157,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
                   'C' : [100, 10, 1.0, 0.1, 0.01]
         }
         
-        # NOTE: Notebook uses cv=3, n_iter=10
+        
         model_grid_lr = RandomizedSearchCV(lr_model, param_distributions=lr_params, 
                                            verbose=0, n_iter=10, cv=3)
         model_grid_lr.fit(X_train, y_train)
@@ -174,7 +174,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
         mlflow.log_param("data_version", DATA_VERSION)
         
         # Store model to disk for interpretability
-        joblib.dump(value=best_model_lr, filename=lr_model_path)
+        joblib.dump(value=best_model_lr, filename=validation_model_path)
         
         # Custom python model for predicting probability (as required by notebook)
         mlflow.pyfunc.log_model('model', python_model=lr_wrapper(best_model_lr))
@@ -183,7 +183,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
         run_id = run.info.run_id # Capture run_id for model selection step
         
     model_classification_report = classification_report(y_test, y_pred_test_lr, output_dict=True)
-    model_results[lr_model_path] = model_classification_report
+    model_results[validation_model_path] = model_classification_report
 
     # 7. Save Columns List and Model Results
     column_list_path = os.path.join(artifacts_dir, 'columns_list.json')
