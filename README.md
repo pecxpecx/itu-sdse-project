@@ -24,6 +24,17 @@ Happy-Days/
 ├── requirements.txt            # Dependencies: Defines the Python environment for the Dagger container.
 └── README.md
 ```
+## How To Run the Project on Github UI
+
+Navigate to Actions: On your GitHub repository page, click the Actions tab.
+
+Select Workflow: On the left sidebar, click on "MLOps Pipeline"
+
+Trigger Run: Look for the "Run workflow" button or dropdown menu near the top of the workflow page.
+
+Execute: Click the button to start the job on a GitHub-hosted runner.
+
+
 
 ## How To Run the Project Locally 
 
