@@ -6,7 +6,7 @@ This repository contains our implementation of a fully reproducible end-to-end M
 ### 1. Repository Structure 
 
 ```text
-itu-sdse-project/
+Happy-Days/
 │
 ├── .github/
 │   └── workflows/
