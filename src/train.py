@@ -65,7 +65,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
     # 1. Setup Directories
     os.makedirs(artifacts_dir, exist_ok=True)
     os.makedirs(MLFLOW_RUNS_DIR, exist_ok=True)
-    os.makedirs(os.path.join(artifacts_dir, "model"), exist_ok=True)
+    os.makedirs(os.path.join(artifacts_dir "model"), exist_ok=True)
 
     # 2. MLflow Experiment Setup
     mlflow.set_experiment(EXPERIMENT_NAME)
@@ -75,17 +75,17 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
     data = pd.read_csv(data_gold_path)
     print(f"Training data length: {len(data)}")
 
-    # Drop columns not needed for modeling (as per notebook)
+    # Drop columns not needed for modeling
     data = data.drop(["lead_id", "customer_code", "date_part"], axis=1)
     
-    # Identify categorical and other columns (as per notebook)
+    # Identify categorical and other columns
     cat_cols = ["customer_group", "onboarding", "bin_source", "source"]
     cat_vars = data[cat_cols]
     other_vars = data.drop(cat_cols, axis=1)
 
     # 4. Dummy Variable Creation (One-Hot Encoding)
     for col in cat_vars:
-        # Convert to category first, then create dummies (as per notebook)
+        # Convert to category first, then create dummies
         cat_vars[col] = cat_vars[col].astype("category")
         cat_vars = create_dummy_cols(cat_vars, col)
     
@@ -98,7 +98,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
     y = data["lead_indicator"]
     X = data.drop(["lead_indicator"], axis=1)
     
-    # Data splitting (using stratify and random_state as defined in notebook)
+    # Data splitting 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, random_state=42, test_size=0.15, stratify=y
     )
@@ -119,7 +119,6 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
         "eval_metric": ["aucpr", "error"]
     }
     
-    # NOTE: Notebook uses cv=10, n_iter=10
     model_grid_xgboost = RandomizedSearchCV(model, param_distributions=params, 
                                             n_jobs=-1, verbose=0, n_iter=10, cv=10)
     model_grid_xgboost.fit(X_train, y_train)
@@ -139,7 +138,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
     # Store classification report for model selection
     model_results[xgboost_model_path] = classification_report(y_test, y_pred_test_xgboost, output_dict=True)
 
-    # --- 6. Model Training: SKLearn Logistic Regression (Logged with MLflow) ---
+    # --- 6. Model Training: SKLearn Logistic Regression ---
     print("\n--- Training Logistic Regression Model (with MLflow) ---")
     
     experiment_id = mlflow.get_experiment_by_name(EXPERIMENT_NAME).experiment_id
@@ -177,7 +176,7 @@ def run_training_pipeline(data_gold_path: str, artifacts_dir: str):
         # Store model to disk for interpretability
         joblib.dump(value=best_model_lr, filename=model_path)
         
-        # Custom python model for predicting probability (as required by notebook)
+        # Custom python model for predicting probability
         mlflow.pyfunc.log_model('model', python_model=lr_wrapper(best_model_lr))
         mlflow.log_artifacts(artifacts_dir, artifact_path="model")
         
