@@ -1,6 +1,6 @@
 # ITU BDS MLOPS'25 - Project
 
-This repository contains our implementation of a fully reproducible end-to-end MLOps pipeline developed for the ITU BDS MLOps 2025 course. The goal was to transform the original exploratory notebook into a modular, automated ML system using DVC for data management, MLflow for experiment tracking, and GitHub Actions + Dagger for CI/CD automation.
+This repository contains our implementation of a fully reproducible end-to-end MLOps pipeline developed for the ITU BDS MLOps 2025 course. The goal was to transform the original exploratory notebook into a modular, automated ML system using **DVC** for data management, **MLflow** for experiment tracking, and **GitHub Actions + Dagger** for CI/CD automation.
 
 
 ### 1. Repository Structure 
